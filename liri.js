@@ -1,85 +1,92 @@
 var fs = require('fs');
-var twitter = require ('twitter');
-var spotify = require('./spotify_keys');
+var spotify = require('spotify');
 var request = require('request');
-var twitter_keys = require('./twitter_keys');
+var twitter = require('twitter');
 
+var getSomething = process.argv[2];
 
-var generateTweets = process.argv[2];
-var argument = process.argv[3];
-// var dTwitter = new twitter (keys.twitterKeys)
+//Switch 
 
-switch (generateTweets){
+switch (getSomething){
    case "my-tweets":
-            generatetweets()
+            getTweets()
              break;
    
    case "spotify-this-song":
-        spotifySong(argument) 
+            getSong(argument) 
             break;
 
    case "movie-this":
-            movie(argument)
+            getMovie(argument)
             break;
    
     case "do-what-it-says":
-            console.log("do-what-it-says")
-      doWhat()
+            // console.log("do-what-it-says") {
+            doWhat();
             break;
+  // default:
+  //   console.log("Error in request")
+  //   break;
+    // } 
+  };
+ 
+ //TWITTER TWEETS 
+ function getTweets(){
+  var getSomething = process.argv[2]; 
+  var Twitter = require('twitter');
+  var tweet = new Twitter({
+    consumer_key:     'jmMY4vli6FC9chD0zvBM0Cqsf',
+    consumer_secret:    'F4uZitIm6ZC8l4H1oopxFVCCvtJkkiWG9BAoRmdvT3S0tOoNTp',
+    access_token_key:   '912771666047938560-izWRtkkhy4RGQcY6yxkQiMgbVsK3cUx',
+    access_token_secret:  'mI6ncU5yMePaJi3jdM7EThRT8trYq2CZTjM5wsYnbv2N2',
+});
+  var userName = { user_name: 'denubc' };
 
-  default:
-    console.log("Error in request")
-    break;
-} 
-
-function generateTweets(){
-
-var params = {screen_name: 'denubc'};
-dTwitter.get('statuses/user_timeline', params, function(error, tweets, response){
-  if (!error) {
+  tweet.get('statuses/user_timeline', userName, displayGetTweets);
+  function displayGetTweets(error, tweets, response) {
+  if (getSomething) {
     for (var i =0; i<tweets.length; i++){
     console.log(tweets[i].text);
-    }; 
-  };
-});  
-};
+        } 
+      }
+    }
+  }
+}
 
-function spotifySong(argument){
-  var song;
-    if(argument=== undefined){
-      song = "any other song"; 
-      } else {
-        song = argument;
+// SPOTIFY SONGS
+function getSong(argument) {
+    if(argument === undefined){
+      getSong = 'The Sign'; 
+  } else {
+        getSong = argument.getSong;
       };
-      console.log(song);
+      var Spotify = require('node-spotify-api');
+      var spotify = new Spotify({id: 'cdbe26aefd0248d8ada809e12b457d46', secret: '656fad1400a54ce8afcde90213d97d3c',
+      });
 
-      spotify.search({ type: 'track', query: song}, function(error, data) {
+      spotify.search({ type: 'track', query: getSong}, function(error, data) {
         console.log('i want it that way');
         console.log(data)
-        
+      };        
         for (var i =0; i<data.tracks.items.length; i++){
           console.log(data.tracks.items[i].artists[0].name);
           console.log(data.tracks.items[i].name);
           console.log(data.tracks.items[i].preview_url);
           console.log(data.tracks.items[i].album.name);
         };
-      });
+    });
 };
 
-function movie(argument){
-console.log("hello");
-
-var movieTitle;
-
-  if(argument=== undefined){
-
+// OMDB MOVIES
+ function getMovie(argument){
+   var movieTitle = process.argv[3];
+    if(argument=== undefined){
     movieTitle = "Mr.Nobody"; 
-
     } else {
       movieTitle = argument;
     };
 
-  request("http://www.omdbapi.com/?t="+movieTitle+"&y=&plot=short&r=json", function(err, response, body){
+  request("http://www.omdbapi.com/?t="+movieTitle+"&y=&plot=short&apikey=40e9cece", function(err, response, body){
         //100 is response if server is not loading
         if(!err && response.statusCode == 100){
             body = JSON.parse(body);
@@ -92,15 +99,17 @@ var movieTitle;
 
         };
     });
+    */
 };
 
-
+//DWIS 
 function doWhat(){
+    var fs = require ('fs');
     fs.readFile('random.txt', "utf8", function(error, data){
         console.log(data);
 
     textArray = data.split(',');
     
     spotifySong(textArray[1])
-})
+  })
 };
