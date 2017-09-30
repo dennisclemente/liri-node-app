@@ -13,21 +13,17 @@ switch (getSomething){
              break;
    
    case "spotify-this-song":
-            getSong(argument) 
+            getSong() 
             break;
 
    case "movie-this":
-            getMovie(argument)
+            getMovie()
             break;
    
     case "do-what-it-says":
-            // console.log("do-what-it-says") {
+            console.log("do-what-it-says")
             doWhat();
             break;
-  // default:
-  //   console.log("Error in request")
-  //   break;
-    // } 
   };
  
  //TWITTER TWEETS 
@@ -43,44 +39,48 @@ switch (getSomething){
   var userName = { user_name: 'denubc' };
 
   tweet.get('statuses/user_timeline', userName, displayGetTweets);
-  function displayGetTweets(error, tweets, response) {
+}
+function displayGetTweets(error, tweets, response) {
   if (getSomething) {
     for (var i =0; i<tweets.length; i++){
-    console.log(tweets[i].text);
-        } 
-      }
-    }
+      console.log(tweets[i].text);
+    } 
   }
 }
 
 // SPOTIFY SONGS
 function getSong(argument) {
-    if(argument === undefined){
-      getSong = 'The Sign'; 
+  var songTitle = "";
+  if(argument === undefined){
+      songTitle = 'The Sign'; 
   } else {
-        getSong = argument.getSong;
-      };
+    songTitle = argument;
+  };
       var Spotify = require('node-spotify-api');
       var spotify = new Spotify({id: 'cdbe26aefd0248d8ada809e12b457d46', secret: '656fad1400a54ce8afcde90213d97d3c',
       });
 
-      spotify.search({ type: 'track', query: getSong}, function(error, data) {
+      spotify.search({ type: 'track', query: songTitle}, function(error, data) {
         console.log('i want it that way');
         console.log(data)
-      };        
-        for (var i =0; i<data.tracks.items.length; i++){
-          console.log(data.tracks.items[i].artists[0].name);
-          console.log(data.tracks.items[i].name);
-          console.log(data.tracks.items[i].preview_url);
-          console.log(data.tracks.items[i].album.name);
-        };
-    });
-};
+      });        
+
+      var trackCount;
+
+      for (var i = 0; i < trackCount; i++) {
+        var artistCount = data.tracks.items[i].artists.length;
+      for (var j = 0; j < artistCount; j++) {
+        console.log("Artist: " + data.tracks.items[i].artists[j].name +
+        " Album:  " + wordwrap.wrap(data.tracks.items[i].album.name, { width: 40 }) +
+        " Link: " + data.tracks.items[i].artists[j].external_urls.spotify + "\n");
+           }
+        }
+      };
 
 // OMDB MOVIES
  function getMovie(argument){
    var movieTitle = process.argv[3];
-    if(argument=== undefined){
+    if(argument === undefined){
     movieTitle = "Mr.Nobody"; 
     } else {
       movieTitle = argument;
@@ -90,16 +90,21 @@ function getSong(argument) {
         //100 is response if server is not loading
         if(!err && response.statusCode == 100){
             body = JSON.parse(body);
+                        var title = JSON.parse(body).Title;
+                        var year = JSON.parse(body).Year;
+                        var rating = JSON.parse(body).Rated;
+                        var country = JSON.parse(body).Country;
+                        var plot = JSON.parse(body).Plot;
+                        var actors = JSON.parse(body).Actors;
+
             console.log("Title: " + body.Title);
             console.log("Year: " + body.Year); 
-            console.log("IMDB RATING: " + body.imdbRating);
+            console.log("OMDB RATING: " + body.omdbRating);
             console.log("Country: " + body.Country); 
             console.log("Plot " + body.Plot);
             console.log("Actors: "+ body.Actors);
-
         };
     });
-    */
 };
 
 //DWIS 
@@ -110,6 +115,6 @@ function doWhat(){
 
     textArray = data.split(',');
     
-    spotifySong(textArray[1])
+    getSong(textArray[1])
   })
 };
